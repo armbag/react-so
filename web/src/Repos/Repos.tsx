@@ -42,28 +42,30 @@ export function Repos() {
   return (
     <div>
       {isLoading && 'isLoading...'}
-      <table>
-        <thead>
-          {instance.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan}>
-                  {header.isPlaceholder ? null : header.renderHeader()}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {instance.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>{cell.renderCell()}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {!error && (
+        <table>
+          <thead>
+            {instance.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} colSpan={header.colSpan}>
+                    {header.isPlaceholder ? null : header.renderHeader()}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {instance.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>{cell.renderCell()}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
       {error && <div>{error}</div>}
     </div>
   );

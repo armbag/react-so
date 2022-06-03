@@ -12,12 +12,13 @@ export function useRepos() {
       try {
         const response = await fetch('/repos');
         const data = await response.json();
+        if (data.status === 400) {
+          throw data;
+        }
         setRepos(data);
       } catch (err: any) {
-        if (err.message) {
-          setError(err.message);
-          setRepos([]);
-        }
+        setError(err.message);
+        setRepos([]);
       } finally {
         setIsLoading(false);
       }
