@@ -15,10 +15,14 @@ export function useRepos() {
         if (data.status === 400) {
           throw data;
         }
-        setRepos(data);
+        const reversedChronologicalRepos = data.sort(
+          (repoA: Repo, repoB: Repo) => {
+            return repoB.created_at.localeCompare(repoA.created_at);
+          }
+        );
+        setRepos(reversedChronologicalRepos);
       } catch (err: any) {
         setError(err.message);
-        setRepos([]);
       } finally {
         setIsLoading(false);
       }
