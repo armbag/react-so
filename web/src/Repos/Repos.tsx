@@ -4,6 +4,7 @@ import {
   useTableInstance,
   getCoreRowModel,
 } from '@tanstack/react-table';
+import { ErrorHandler } from '../components/ErrorHandler';
 import { Button } from '../components/Button';
 import { Loader } from '../components/Loader';
 import { CommitInfo } from '../components/CommitInfo';
@@ -116,15 +117,7 @@ export function Repos() {
           </tbody>
         </table>
       ) : (
-        <div className="err-container">
-          <p className="err-message">{error}</p>
-          <Button
-            className="try-again"
-            onClick={() => window.location.reload()}
-          >
-            Try Again
-          </Button>
-        </div>
+        <ErrorHandler message={error} />
       )}
       <CommitInfo branchUrl={branchUrl} />
       <RepoReadMe fullName={selectedRepo} />

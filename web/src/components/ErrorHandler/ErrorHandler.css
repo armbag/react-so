@@ -1,0 +1,7 @@
+.err-message {
+  color: red;
+}
+
+.err-container .try-again {
+  background-color: var(--red);
+}

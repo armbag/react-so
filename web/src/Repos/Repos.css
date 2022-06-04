@@ -16,14 +16,6 @@ tr.selected {
   background-color: var(--silverorangeLighter);
 }
 
-.err-message {
-  color: red;
-}
-
-.err-container .try-again {
-  background-color: var(--red);
-}
-
 .all-button {
   border: 2px solid var(--red);
 }
