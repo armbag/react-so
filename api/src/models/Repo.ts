@@ -26,4 +26,5 @@ export interface Repo {
   forks: number;
   commits_url: string;
   default_branch: string;
+  branches_url?: string;
 }
