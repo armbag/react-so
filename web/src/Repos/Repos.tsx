@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useRepos } from './hooks';
+import { Button } from '../components/Button';
 import type { Repo } from '../../../api/src/models/Repo';
 import {
   createTable,
@@ -31,18 +33,44 @@ const columns = [
 
 export function Repos() {
   const { repos, isLoading, error, languages } = useRepos();
+  const [filteredRepos, setFilteredRepos] = useState<Repo[]>([]);
+  const [selectedLang, setSelectedLang] = useState('');
   const instance = useTableInstance(table, {
-    data: repos,
+    data: selectedLang ? filteredRepos : repos,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const handleLanguageClick = (value: string) => {
+    if (value === selectedLang) {
+      setSelectedLang('');
+      setFilteredRepos([]);
+    } else {
+      setSelectedLang(value);
+      setFilteredRepos(repos.filter((repo) => repo.language === value));
+    }
+  };
+
+  if (isLoading) {
+    return <div className="loader">Loading...</div>;
+  }
   return (
-    <div>
-      {isLoading && 'isLoading...'}
-      {!error && languages.map((lang) => <button key={lang}>{lang}</button>)}
+    <div className="repos-container">
+      <div className="buttons-list">
+        {!error &&
+          languages.map((lang) => (
+            <Button
+              value={lang}
+              key={lang}
+              pressed={selectedLang === lang}
+              onClick={handleLanguageClick}
+            >
+              {lang}
+            </Button>
+          ))}
+      </div>
       {!error && (
-        <table>
+        <table className="repos-table">
           <thead>
             {instance.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
