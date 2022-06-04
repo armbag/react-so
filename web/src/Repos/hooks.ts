@@ -5,6 +5,7 @@ export function useRepos() {
   const [repos, setRepos] = useState<Repo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [languages, setLanguages] = useState<string[]>([]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -15,11 +16,16 @@ export function useRepos() {
         if (data.status === 400) {
           throw data;
         }
+        const uniqueLang = [
+          ...new Set(data.map((repo: Repo) => repo.language)),
+        ];
         const reversedChronologicalRepos = data.sort(
           (repoA: Repo, repoB: Repo) => {
             return repoB.created_at.localeCompare(repoA.created_at);
           }
         );
+        const newlangs = uniqueLang as string[];
+        setLanguages(newlangs);
         setRepos(reversedChronologicalRepos);
       } catch (err: any) {
         setError(err.message);
@@ -30,5 +36,5 @@ export function useRepos() {
     fetchRepos();
   }, []);
 
-  return { repos, isLoading, error };
+  return { repos, isLoading, error, languages };
 }

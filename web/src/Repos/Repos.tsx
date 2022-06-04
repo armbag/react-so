@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useRepos } from './useRepos';
+import { useRepos } from './hooks';
 import type { Repo } from '../../../api/src/models/Repo';
 import {
   createTable,
@@ -31,7 +31,7 @@ const defaultColumns = [
 ];
 
 export function Repos() {
-  const { repos, isLoading, error } = useRepos();
+  const { repos, isLoading, error, languages } = useRepos();
   const [columns] = useState<typeof defaultColumns>(() => [...defaultColumns]);
   const instance = useTableInstance(table, {
     data: repos,
@@ -42,6 +42,7 @@ export function Repos() {
   return (
     <div>
       {isLoading && 'isLoading...'}
+      {!error && languages.map((lang) => <button key={lang}>{lang}</button>)}
       {!error && (
         <table>
           <thead>
