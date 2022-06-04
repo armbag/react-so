@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useRepos } from './hooks';
 import type { Repo } from '../../../api/src/models/Repo';
 import {
@@ -10,7 +9,7 @@ import './Repos.css';
 
 const table = createTable().setRowType<Repo>();
 
-const defaultColumns = [
+const columns = [
   table.createGroup({
     header: 'Repositories',
     columns: [
@@ -32,7 +31,6 @@ const defaultColumns = [
 
 export function Repos() {
   const { repos, isLoading, error, languages } = useRepos();
-  const [columns] = useState<typeof defaultColumns>(() => [...defaultColumns]);
   const instance = useTableInstance(table, {
     data: repos,
     columns,
