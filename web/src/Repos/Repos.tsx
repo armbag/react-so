@@ -112,9 +112,9 @@ export function Repos() {
             <tr
               key={row.id}
               onClick={() => handleRepoClick(row.original)}
-              className={
+              className={`row-repo ${
                 row.original?.full_name === selectedRepo ? 'selected' : ''
-              }
+              }`}
             >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id}>{cell.renderCell()}</td>
