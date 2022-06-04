@@ -74,20 +74,19 @@ export function Repos() {
   return (
     <div className="repos-container">
       <div className="buttons-list">
-        {!error &&
-          languages.map((lang, index) => (
-            <Button
-              value={lang}
-              key={lang + index}
-              pressed={selectedLang === lang}
-              onClick={handleLanguageClick}
-              className={lang === '' ? 'all-button' : ''}
-            >
-              {lang === '' ? 'All' : lang}
-            </Button>
-          ))}
+        {languages.map((lang, index) => (
+          <Button
+            value={lang}
+            key={lang + index}
+            pressed={selectedLang === lang}
+            onClick={handleLanguageClick}
+            className={lang === '' ? 'all-button' : ''}
+          >
+            {lang === '' ? 'All' : lang}
+          </Button>
+        ))}
       </div>
-      {!error && (
+      {!error ? (
         <table className="repos-table">
           <thead>
             {instance.getHeaderGroups().map((headerGroup) => (
@@ -116,8 +115,7 @@ export function Repos() {
             ))}
           </tbody>
         </table>
-      )}
-      {error && (
+      ) : (
         <div className="err-container">
           <p className="err-message">{error}</p>
           <Button
