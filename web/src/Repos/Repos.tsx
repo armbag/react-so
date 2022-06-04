@@ -4,10 +4,10 @@ import {
   useTableInstance,
   getCoreRowModel,
 } from '@tanstack/react-table';
-import { ErrorHandler } from '../components/ErrorHandler';
 import { Button } from '../components/Button';
 import { Loader } from '../components/Loader';
 import { CommitInfo } from '../components/CommitInfo';
+import { ErrorHandler } from '../components/ErrorHandler';
 import type { Repo } from '../../../api/src/models/Repo';
 import { RepoReadMe } from './RepoReadMe';
 import { useRepos } from './hooks';
@@ -58,19 +58,27 @@ export function Repos() {
     setBranchUrl('');
   };
 
-  const handleRepoClick = (row: any) => {
-    setSelectedRepo(row.original?.full_name);
+  const handleRepoClick = (rep: Repo | undefined) => {
+    if (!rep) {
+      return;
+    }
+    setSelectedRepo(rep.full_name);
 
-    const defaultBranch = row.original.default_branch;
-    const newBranchUrl = row.original.branches_url?.replace(
+    const defaultBranch = rep.default_branch;
+    const newBranchUrl = rep.branches_url?.replace(
       '{/branch}',
       `/${defaultBranch}`
     );
-    setBranchUrl(newBranchUrl);
+    if (newBranchUrl) {
+      setBranchUrl(newBranchUrl);
+    }
   };
 
   if (isLoading) {
     return <Loader />;
+  }
+  if (error) {
+    return <ErrorHandler message={error} />;
   }
   return (
     <div className="repos-container">
@@ -87,38 +95,34 @@ export function Repos() {
           </Button>
         ))}
       </div>
-      {!error ? (
-        <table className="repos-table">
-          <thead>
-            {instance.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} colSpan={header.colSpan}>
-                    {header.renderHeader()}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {instance.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                onClick={() => handleRepoClick(row)}
-                className={
-                  row.original?.full_name === selectedRepo ? 'selected' : ''
-                }
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>{cell.renderCell()}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <ErrorHandler message={error} />
-      )}
+      <table className="repos-table">
+        <thead>
+          {instance.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id} colSpan={header.colSpan}>
+                  {header.renderHeader()}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {instance.getRowModel().rows.map((row) => (
+            <tr
+              key={row.id}
+              onClick={() => handleRepoClick(row.original)}
+              className={
+                row.original?.full_name === selectedRepo ? 'selected' : ''
+              }
+            >
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id}>{cell.renderCell()}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <CommitInfo branchUrl={branchUrl} />
       <RepoReadMe fullName={selectedRepo} />
     </div>
