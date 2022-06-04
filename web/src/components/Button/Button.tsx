@@ -2,9 +2,10 @@ import styles from './Button.module.css';
 
 interface ButtonProps {
   children: React.ReactNode;
-  pressed: boolean;
-  onClick: (value: string) => void;
-  value: string;
+  pressed?: boolean;
+  onClick?: (value: string) => void;
+  value?: string;
+  className?: string;
 }
 
 export function Button(props: ButtonProps): JSX.Element {
@@ -12,7 +13,7 @@ export function Button(props: ButtonProps): JSX.Element {
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     const value = (event.target as HTMLInputElement).value;
-    props.onClick(value);
+    props.onClick && props.onClick(value);
   };
 
   return (
@@ -20,7 +21,7 @@ export function Button(props: ButtonProps): JSX.Element {
       value={props.value}
       className={`${styles.button} ${
         props.pressed ? styles.buttonPressed : ''
-      }`}
+      } ${props.className ? props.className : ''}`}
       onClick={handleClick}
     >
       {props.children}

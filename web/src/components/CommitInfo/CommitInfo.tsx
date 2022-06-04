@@ -1,16 +1,53 @@
+import { useEffect, useState } from 'react';
+import { Loader } from '../Loader';
 import './CommitInfo.css';
 
 interface ICommit {
-  data: {
-    name: string;
-    date: string;
-    message: string;
-  };
+  branchUrl?: string;
 }
 
 export function CommitInfo(props: ICommit) {
-  if (!props.data.name) {
+  const [data, setData] = useState({
+    name: '',
+    date: '',
+    message: '',
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (props.branchUrl) {
+      setIsLoading(true);
+      fetch(props.branchUrl)
+        .then((raw) => raw.json())
+        .then((json) => {
+          setData({
+            name: json.commit.commit.author.name,
+            date: json.commit.commit.author.date,
+            message: json.commit.commit.message,
+          });
+        })
+        .catch(() =>
+          setData({
+            name: '',
+            date: '',
+            message: '',
+          })
+        )
+        .finally(() => setIsLoading(false));
+    } else {
+      setData({
+        name: '',
+        date: '',
+        message: '',
+      });
+    }
+  }, [props.branchUrl]);
+
+  if (!data.name) {
     return null;
+  }
+  if (isLoading) {
+    return <Loader />;
   }
   return (
     <>
@@ -22,9 +59,9 @@ export function CommitInfo(props: ICommit) {
           <div>Message:</div>
         </div>
         <div>
-          <div className="commit-author"> {props.data.name}</div>
-          <div className="commit-date"> {props.data.date}</div>
-          <div className="commit-message"> {props.data.message}</div>
+          <div className="commit-author"> {data.name}</div>
+          <div className="commit-date"> {data.date}</div>
+          <div className="commit-message"> {data.message}</div>
         </div>
       </div>
     </>

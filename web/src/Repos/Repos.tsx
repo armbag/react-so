@@ -36,49 +36,36 @@ const columns = [
 
 export function Repos() {
   const { repos, isLoading, error, languages } = useRepos();
-  const [filteredRepos, setFilteredRepos] = useState<Repo[]>([]);
   const [selectedLang, setSelectedLang] = useState('');
   const [selectedRepo, setSelectedRepo] = useState('');
-  const [lastCommitInfo, setLastCommitInfo] = useState({
-    name: '',
-    date: '',
-    message: '',
-  });
+  const [branchUrl, setBranchUrl] = useState('');
   const instance = useTableInstance(table, {
-    data: selectedLang ? filteredRepos : repos,
+    data: selectedLang
+      ? repos.filter((repo) => repo.language === selectedLang)
+      : repos,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
   const handleLanguageClick = (value: string) => {
-    if (value === selectedLang) {
+    if (value === selectedLang || value === '') {
       setSelectedLang('');
-      setFilteredRepos([]);
     } else {
       setSelectedLang(value);
-      setFilteredRepos(repos.filter((repo) => repo.language === value));
     }
+    setSelectedRepo('');
+    setBranchUrl('');
   };
 
-  const handleClickRepo = (row: any) => {
-    // When you click a repository, display the most recent commit date, author,
-    // and message.
+  const handleRepoClick = (row: any) => {
     setSelectedRepo(row.original?.full_name);
 
     const defaultBranch = row.original.default_branch;
-    const branchUrl = row.original.branches_url.replace(
+    const newBranchUrl = row.original.branches_url?.replace(
       '{/branch}',
       `/${defaultBranch}`
     );
-    fetch(branchUrl)
-      .then((raw) => raw.json())
-      .then((data) => {
-        setLastCommitInfo({
-          name: data.commit.commit.author.name,
-          date: data.commit.commit.author.date,
-          message: data.commit.commit.message,
-        });
-      });
+    setBranchUrl(newBranchUrl);
   };
 
   if (isLoading) {
@@ -88,14 +75,15 @@ export function Repos() {
     <div className="repos-container">
       <div className="buttons-list">
         {!error &&
-          languages.map((lang) => (
+          languages.map((lang, index) => (
             <Button
               value={lang}
-              key={lang}
+              key={lang + index}
               pressed={selectedLang === lang}
               onClick={handleLanguageClick}
+              className={lang === '' ? 'all-button' : ''}
             >
-              {lang}
+              {lang === '' ? 'All' : lang}
             </Button>
           ))}
       </div>
@@ -106,7 +94,7 @@ export function Repos() {
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder ? null : header.renderHeader()}
+                    {header.renderHeader()}
                   </th>
                 ))}
               </tr>
@@ -116,7 +104,7 @@ export function Repos() {
             {instance.getRowModel().rows.map((row) => (
               <tr
                 key={row.id}
-                onClick={() => handleClickRepo(row)}
+                onClick={() => handleRepoClick(row)}
                 className={
                   row.original?.full_name === selectedRepo ? 'selected' : ''
                 }
@@ -129,8 +117,18 @@ export function Repos() {
           </tbody>
         </table>
       )}
-      {error && <div>{error}</div>}
-      <CommitInfo data={lastCommitInfo} />
+      {error && (
+        <div className="err-container">
+          <p className="err-message">{error}</p>
+          <Button
+            className="try-again"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </Button>
+        </div>
+      )}
+      <CommitInfo branchUrl={branchUrl} />
       <RepoReadMe fullName={selectedRepo} />
     </div>
   );

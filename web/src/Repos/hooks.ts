@@ -25,7 +25,7 @@ export function useRepos() {
           }
         );
         const newlangs = uniqueLang as string[];
-        setLanguages(newlangs);
+        setLanguages([...newlangs, '']);
         setRepos(reversedChronologicalRepos);
       } catch (err: any) {
         setError(err.message);
