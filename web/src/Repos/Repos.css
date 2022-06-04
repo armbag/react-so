@@ -7,3 +7,11 @@
   display: flex;
   justify-content: center;
 }
+
+.repos-table {
+  border-spacing: 0;
+}
+
+tr.selected {
+  background-color: var(--silverorangeLighter);
+}
