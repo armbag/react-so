@@ -20,13 +20,13 @@ export function CommitInfo(props: ICommit) {
       setIsLoading(true);
       fetch(props.branchUrl)
         .then((raw) => raw.json())
-        .then((json) => {
+        .then((json) =>
           setData({
             name: json.commit.commit.author.name,
             date: json.commit.commit.author.date,
             message: json.commit.commit.message,
-          });
-        })
+          })
+        )
         .catch(() =>
           setData({
             name: '',
@@ -44,14 +44,12 @@ export function CommitInfo(props: ICommit) {
     }
   }, [props.branchUrl]);
 
-  if (!data.name) {
-    return null;
-  }
   return (
     <>
       <h3 className="commit-title">Last Commit Information</h3>
-      {isLoading ? (
-        <Loader />
+      {isLoading && <Loader />}
+      {!data.name ? (
+        <p>Unable to retrieve last commit information</p>
       ) : (
         <div className="commit-info">
           <div className="commit-labels">

@@ -63,7 +63,6 @@ export function Repos() {
       return;
     }
     setSelectedRepo(rep.full_name);
-
     const defaultBranch = rep.default_branch;
     const newBranchUrl = rep.branches_url?.replace(
       '{/branch}',
@@ -71,6 +70,8 @@ export function Repos() {
     );
     if (newBranchUrl) {
       setBranchUrl(newBranchUrl);
+    } else {
+      setBranchUrl('');
     }
   };
 
@@ -123,8 +124,12 @@ export function Repos() {
           ))}
         </tbody>
       </table>
-      <CommitInfo branchUrl={branchUrl} />
-      <RepoReadMe fullName={selectedRepo} />
+      {selectedRepo && (
+        <>
+          <CommitInfo branchUrl={branchUrl} />
+          <RepoReadMe fullName={selectedRepo} />
+        </>
+      )}
     </div>
   );
 }

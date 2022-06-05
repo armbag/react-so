@@ -34,9 +34,6 @@ export function RepoReadMe(props: IRepo) {
   if (isLoading) {
     return <Loader />;
   }
-  if (!props.fullName) {
-    return null;
-  }
 
   return (
     <div className="read-me-container">
