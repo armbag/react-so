@@ -1,6 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 import { useEffect, useState } from 'react';
 import { Loader } from '../../components/Loader';
+import './RepoReadMe.css';
 
 interface IRepo {
   fullName: string;
@@ -33,6 +34,18 @@ export function RepoReadMe(props: IRepo) {
   if (isLoading) {
     return <Loader />;
   }
+  if (!props.fullName) {
+    return null;
+  }
 
-  return <ReactMarkdown children={markdown} />;
+  return (
+    <div className="read-me-container">
+      <h2>
+        {props.fullName} <code>README.md</code>
+      </h2>
+      <div className="read-me-content">
+        <ReactMarkdown children={markdown} />
+      </div>
+    </div>
+  );
 }
