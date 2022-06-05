@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { urlServer } from '../config';
 import type { Repo } from '../../../api/src/models/Repo';
+import { urlServer } from '../config';
 
 export function useRepos() {
   const [repos, setRepos] = useState<Repo[]>([]);

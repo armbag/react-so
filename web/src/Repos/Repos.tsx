@@ -4,11 +4,11 @@ import {
   useTableInstance,
   getCoreRowModel,
 } from '@tanstack/react-table';
+import type { Repo } from '../../../api/src/models/Repo';
 import { Button } from '../components/Button';
 import { Loader } from '../components/Loader';
 import { CommitInfo } from '../components/CommitInfo';
 import { ErrorHandler } from '../components/ErrorHandler';
-import type { Repo } from '../../../api/src/models/Repo';
 import { RepoReadMe } from './RepoReadMe';
 import { useRepos } from './hooks';
 import './Repos.css';
