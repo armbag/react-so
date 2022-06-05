@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Loader } from '../Loader';
+import { formatDate } from '../../utils/formatDate';
 import './CommitInfo.css';
 
 interface ICommit {
@@ -60,7 +61,7 @@ export function CommitInfo(props: ICommit) {
         </div>
         <div>
           <div className="commit-author"> {data.name}</div>
-          <div className="commit-date"> {data.date}</div>
+          <div className="commit-date"> {formatDate(data.date)}</div>
           <div className="commit-message"> {data.message}</div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { urlServer } from '../config';
 import type { Repo } from '../../../api/src/models/Repo';
 
 export function useRepos() {
@@ -11,7 +12,7 @@ export function useRepos() {
     setIsLoading(true);
     const fetchRepos = async () => {
       try {
-        const response = await fetch('/repos');
+        const response = await fetch(urlServer('/repos'));
         const data = await response.json();
         if (data.status === 400) {
           throw data;
