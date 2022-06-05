@@ -47,24 +47,25 @@ export function CommitInfo(props: ICommit) {
   if (!data.name) {
     return null;
   }
-  if (isLoading) {
-    return <Loader />;
-  }
   return (
     <>
       <h3 className="commit-title">Last Commit Information</h3>
-      <div className="commit-info">
-        <div className="commit-labels">
-          <div>Author:</div>
-          <div>Date:</div>
-          <div>Message:</div>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <div className="commit-info">
+          <div className="commit-labels">
+            <div>Author:</div>
+            <div>Date:</div>
+            <div>Message:</div>
+          </div>
+          <div>
+            <div className="commit-author"> {data.name}</div>
+            <div className="commit-date"> {formatDate(data.date)}</div>
+            <div className="commit-message"> {data.message}</div>
+          </div>
         </div>
-        <div>
-          <div className="commit-author"> {data.name}</div>
-          <div className="commit-date"> {formatDate(data.date)}</div>
-          <div className="commit-message"> {data.message}</div>
-        </div>
-      </div>
+      )}
     </>
   );
 }
