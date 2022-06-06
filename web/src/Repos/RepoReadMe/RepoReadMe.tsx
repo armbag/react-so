@@ -1,47 +1,24 @@
 import ReactMarkdown from 'react-markdown';
-import { useEffect, useState } from 'react';
-import { Loader } from '../../components/Loader';
 import './RepoReadMe.css';
 
 interface IRepo {
-  fullName: string;
+  resource: any;
+  repoName: string;
 }
 
-export function RepoReadMe(props: IRepo) {
-  const [markdown, setMarkdown] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+export function RepoReadMe({ resource, repoName }: IRepo) {
+  const readMe = resource && resource.read();
 
-  useEffect(() => {
-    if (props.fullName) {
-      setIsLoading(true);
-      fetch(
-        `https://raw.githubusercontent.com/${props.fullName}/master/README.md`
-      )
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error("This repository doesn't have `README.md` file");
-          }
-          return res.text();
-        })
-        .then((text) => setMarkdown(text))
-        .catch((err) => setMarkdown(err.message))
-        .finally(() => setIsLoading(false));
-    } else {
-      setMarkdown('');
-    }
-  }, [props.fullName]);
-
-  if (isLoading) {
-    return <Loader />;
+  if (!repoName) {
+    return null;
   }
-
   return (
     <div className="read-me-container">
       <h2>
-        {props.fullName} <code>README.md</code>
+        {repoName} <code>README.md</code>
       </h2>
       <div className="read-me-content">
-        <ReactMarkdown children={markdown} />
+        {typeof readMe === 'string' && <ReactMarkdown children={readMe} />}
       </div>
     </div>
   );

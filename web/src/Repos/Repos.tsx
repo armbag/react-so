@@ -1,14 +1,17 @@
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import {
   createTable,
   useTableInstance,
   getCoreRowModel,
 } from '@tanstack/react-table';
 import type { Repo } from '../../../api/src/models/Repo';
+import type { IResource } from '../utils/wrapPromise';
+import { githubApi } from '../services/githubApi';
 import { Button } from '../components/Button';
 import { Loader } from '../components/Loader';
 import { CommitInfo } from '../components/CommitInfo';
 import { ErrorHandler } from '../components/ErrorHandler';
+import { fetchData } from '../utils/fetchData';
 import { RepoReadMe } from './RepoReadMe';
 import { useRepos } from './hooks';
 import './Repos.css';
@@ -38,8 +41,9 @@ const columns = [
 export function Repos() {
   const { repos, isLoading, error, languages } = useRepos();
   const [selectedLang, setSelectedLang] = useState('');
-  const [selectedRepo, setSelectedRepo] = useState('');
-  const [branchUrl, setBranchUrl] = useState('');
+  const [selectedRepoName, setSelectedRepoName] = useState('');
+  const [readMeResource, setReadMeResource] = useState<IResource>();
+  const [commitInfoResource, setCommitInfoResource] = useState<IResource>();
   const instance = useTableInstance(table, {
     data: selectedLang
       ? repos.filter((repo) => repo.language === selectedLang)
@@ -49,30 +53,26 @@ export function Repos() {
   });
 
   const handleLanguageClick = (value: string) => {
-    if (value === selectedLang || value === '') {
+    if (value === selectedLang || !value) {
       setSelectedLang('');
     } else {
       setSelectedLang(value);
     }
-    setSelectedRepo('');
-    setBranchUrl('');
+    setSelectedRepoName('');
   };
 
   const handleRepoClick = (rep: Repo | undefined) => {
     if (!rep) {
       return;
     }
-    setSelectedRepo(rep.full_name);
     const defaultBranch = rep.default_branch;
     const newBranchUrl = rep.branches_url?.replace(
       '{/branch}',
       `/${defaultBranch}`
     );
-    if (newBranchUrl) {
-      setBranchUrl(newBranchUrl);
-    } else {
-      setBranchUrl('');
-    }
+    setCommitInfoResource(newBranchUrl ? fetchData(newBranchUrl) : undefined);
+    setReadMeResource(fetchData(githubApi.getReadMe(rep.full_name), 'text'));
+    setSelectedRepoName(rep.full_name);
   };
 
   if (isLoading) {
@@ -114,7 +114,7 @@ export function Repos() {
               key={row.id}
               onClick={() => handleRepoClick(row.original)}
               className={`row-repo ${
-                row.original?.full_name === selectedRepo ? 'selected' : ''
+                row.original?.full_name === selectedRepoName ? 'selected' : ''
               }`}
             >
               {row.getVisibleCells().map((cell) => (
@@ -124,12 +124,15 @@ export function Repos() {
           ))}
         </tbody>
       </table>
-      {selectedRepo && (
-        <>
-          <CommitInfo branchUrl={branchUrl} />
-          <RepoReadMe fullName={selectedRepo} />
-        </>
-      )}
+      <Suspense fallback={<Loader />}>
+        <CommitInfo
+          resource={commitInfoResource}
+          anySelected={selectedRepoName !== ''}
+        />
+      </Suspense>
+      <Suspense fallback={<Loader />}>
+        <RepoReadMe resource={readMeResource} repoName={selectedRepoName} />
+      </Suspense>
     </div>
   );
 }

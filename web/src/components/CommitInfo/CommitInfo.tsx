@@ -1,56 +1,21 @@
-import { useEffect, useState } from 'react';
-import { Loader } from '../Loader';
 import { formatDate } from '../../utils/formatDate';
 import './CommitInfo.css';
 
 interface ICommit {
-  branchUrl?: string;
+  resource: any;
+  anySelected: boolean;
 }
 
-export function CommitInfo(props: ICommit) {
-  const [data, setData] = useState({
-    name: '',
-    date: '',
-    message: '',
-  });
-  const [isLoading, setIsLoading] = useState(false);
+export function CommitInfo({ resource, anySelected }: ICommit) {
+  const data = resource && resource.read();
 
-  useEffect(() => {
-    if (props.branchUrl) {
-      setIsLoading(true);
-      fetch(props.branchUrl)
-        .then((raw) => raw.json())
-        .then((json) =>
-          setData({
-            name: json.commit.commit.author.name,
-            date: json.commit.commit.author.date,
-            message: json.commit.commit.message,
-          })
-        )
-        .catch(() =>
-          setData({
-            name: '',
-            date: '',
-            message: '',
-          })
-        )
-        .finally(() => setIsLoading(false));
-    } else {
-      setData({
-        name: '',
-        date: '',
-        message: '',
-      });
-    }
-  }, [props.branchUrl]);
-
+  if (!anySelected) {
+    return null;
+  }
   return (
     <>
       <h3 className="commit-title">Last Commit Information</h3>
-      {isLoading && <Loader />}
-      {!data.name ? (
-        <p>Unable to retrieve last commit information</p>
-      ) : (
+      {data ? (
         <div className="commit-info">
           <div className="commit-labels">
             <div>Author:</div>
@@ -58,11 +23,17 @@ export function CommitInfo(props: ICommit) {
             <div>Message:</div>
           </div>
           <div>
-            <div className="commit-author"> {data.name}</div>
-            <div className="commit-date"> {formatDate(data.date)}</div>
-            <div className="commit-message"> {data.message}</div>
+            <div className="commit-author">
+              {data.commit.commit.author.name}
+            </div>
+            <div className="commit-date">
+              {formatDate(data.commit.commit.author.date)}
+            </div>
+            <div className="commit-message"> {data.commit.commit.message}</div>
           </div>
         </div>
+      ) : (
+        <p>Unable to retrieve last commit information</p>
       )}
     </>
   );
