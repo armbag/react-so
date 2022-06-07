@@ -1,13 +1,14 @@
 import ReactMarkdown from 'react-markdown';
+import { IResource } from '../../utils/wrapPromise';
 import './RepoReadMe.css';
 
 interface IRepo {
-  resource: any;
+  resource: IResource | undefined;
   repoName: string;
 }
 
 export function RepoReadMe({ resource, repoName }: IRepo) {
-  const readMe = resource && resource.read();
+  const readMe: any = resource?.read?.();
 
   if (!repoName) {
     return null;
@@ -18,7 +19,7 @@ export function RepoReadMe({ resource, repoName }: IRepo) {
         {repoName} <code>README.md</code>
       </h2>
       <div className="read-me-content">
-        {typeof readMe === 'string' && <ReactMarkdown children={readMe} />}
+        <ReactMarkdown children={readMe} />
       </div>
     </div>
   );

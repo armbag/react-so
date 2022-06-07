@@ -1,13 +1,14 @@
 import { formatDate } from '../../utils/formatDate';
+import { IResource } from '../../utils/wrapPromise';
 import './CommitInfo.css';
 
 interface ICommit {
-  resource: any;
+  resource: IResource | undefined;
   anySelected: boolean;
 }
 
 export function CommitInfo({ resource, anySelected }: ICommit) {
-  const data = resource && resource.read();
+  const data: any = resource?.read?.();
 
   if (!anySelected) {
     return null;

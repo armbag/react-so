@@ -1,5 +1,5 @@
 interface IResource {
-  read?: () => string | Response;
+  read: () => Response;
 }
 
 function wrapPromise(promise: Promise<any>): IResource {
