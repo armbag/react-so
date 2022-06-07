@@ -19,7 +19,10 @@ repos.get('/', async (_: Request, res: Response) => {
   res.header('Cache-Control', 'no-store');
 
   const correctLocalRepos = localRepos.filter((repo) => repo.fork === false);
-  const correctRemoteRepos = await fetchRemoteRepos();
+  const remoteRepos = await fetchRemoteRepos();
+  const correctRemoteRepos = remoteRepos.filter(
+    (repo: Repo) => repo.fork === false
+  );
 
   res.status(200);
   res.set('Content-Type', 'application/json');
